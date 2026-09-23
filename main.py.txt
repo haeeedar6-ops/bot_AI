@@ -1,0 +1,34 @@
+import os
+import telebot
+import google.generativeai as genai
+
+# جلب مفاتيح الربط من متغيرات البيئة في الاستضافة بأمان
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# إعداد نموذج Gemini
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+# تهيئة بوت تيليجرام
+bot = telebot.TeleBot(TELEGRAM_TOKEN)
+
+# أمر البداية
+@bot.message_handler(commands=['start', 'help'])
+def send_welcome(message):
+    bot.reply_to(message, "أهلاً بك! أنا بوت ذكاء اصطناعي مدعوم بـ Gemini. اطرح علي أي سؤال وسأجيبك فوراً 🤖")
+
+# التعامل مع جميع الرسائل النصية والرد عليها عبر الذكاء الاصطناعي
+@bot.message_handler(func=lambda message: True)
+def handle_message(message):
+    user_text = message.text
+    try:
+        # إرسال النص إلى نموذج جيميناي واستقبال الرد
+        response = model.generate_content(user_text)
+        bot.reply_to(message, response.text)
+    except Exception as e:
+        bot.reply_to(message, f"عذراً، حدث خطأ أثناء معالجة الطلب: {str(e)}")
+
+if name == "main":
+    print("Bot is running...")
+    bot.infinity_polling()
