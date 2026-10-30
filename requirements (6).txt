@@ -1,0 +1,4 @@
+Flask==3.0.3
+python-binance==1.0.19
+google-genai>=1.0.0
+groq>=0.9.0
